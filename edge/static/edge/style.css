@@ -1,0 +1,16 @@
+body {
+    background: rgb(216, 216, 216) url("images/background.gif") no-repeat;
+}
+
+li {
+    color: green;
+}
+
+.row {
+    display: flex;
+}
+  
+.column {
+    flex: 50%;
+    padding: 5px;
+}
