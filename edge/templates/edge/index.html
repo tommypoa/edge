@@ -1,6 +1,6 @@
 <!-- Set-up -->
 {% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'edge/style.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'edge/style.css' %}" />
 
 <!-- Intro; consider moving to base.html -->
 <h1>Global Policy Lab | Aerial History Project</h1>
@@ -8,23 +8,117 @@
 
 <!-- Edge photos -->
 <column>
-    <div class="row">
-        {% for image, imnum in image_list %}
-            <div class="column">
-                <h2>{{imnum}}: {{ image|slice:"5:" }}</h2>
-                {% if image %}
-                    <ul>
-                        <canvas id={{imnum}} width="256" height="256" style="border: 5px solid #000000;"></canvas>
-                    </ul>
-                {% else %}
-                    <h1><p>Try reloading photo.</p></h1>
-                {% endif %}
-            </div>
-        {% endfor %}
+  <div class="row">
+    {% for image, imnum in image_list %}
+    <div class="column">
+      <h2>{{imnum}}: {{ image|slice:"5:" }}</h2>
+      {% if image %}
+      <ul>
+        <canvas
+          id="{{imnum}}"
+          width="512"
+          height="512"
+          style="border: 5px solid #000000;"
+        ></canvas>
+        <a id="{{imnum}}Coordinates"></a>
+      </ul>
+      {% else %}
+      <h1><p>Try reloading photo.</p></h1>
+      {% endif %}
     </div>
+    {% endfor %}
+  </div>
 </column>
 
-<!-- Output photo -->
-<h1> Output [pending] </h1>
+<!-- Post button -->
+<button onclick="saveCoordinates();"></button>
 
-<script src="{% static 'edge/js/script.js' %}" img="{% static image_list.0.0 %}" img2="{% static image_list.1.0 %}"></script>
+<!-- Output photo -->
+<h1>Output [pending]</h1>
+
+<!-- <script
+  src="{% static 'edge/js/script.js' %}"
+  img="{% static image_list.0.0 %}"
+  img2="{% static image_list.1.0 %}"
+>
+  var a = "{{tuningX}}";
+</script> -->
+
+<!--
+    
+    
+    -------------- SCRIPT ----------------
+
+
+-->
+
+<script language="javascript">
+  var canvas = document.getElementById("im1");
+  var ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#FF0000";
+
+  var canvas2 = document.getElementById("im2");
+  var ctx2 = canvas2.getContext("2d");
+  ctx2.fillStyle = "#00FF00";
+
+  var curX, curY;
+  var curX2, curY2;
+
+  var canvas_data = [];
+
+  // Tuning parameters
+
+  var tuningX = 0;
+  var tuningY = 0;
+
+  // Helper Functions
+  function saveCoordinates() {
+    return;
+  }
+
+  function updateLatestCoordinates1(curX, curY) {
+    document.getElementById("im1Coordinates").innerHTML = curX + " " + curY;
+  }
+
+  function updateLatestCoordinates2(curX2, curY2) {
+    document.getElementById("im2Coordinates").innerHTML = curX2 + " " + curY2;
+  }
+
+  function onload1() {
+    var background = new Image();
+    background.src = "{% static image_list.0.0 %}";
+    background.onload = () => {
+      ctx.drawImage(background, 0, 0, 512, 512);
+    };
+  }
+  function onload2() {
+    var background = new Image();
+    background.src = "{% static image_list.1.0 %}";
+    background.onload = () => {
+      ctx2.drawImage(background, 0, 0, 512, 512);
+    };
+  }
+
+  function listen() {
+    canvas.onmousedown = function(e) {
+      curX = e.clientX - canvas.offsetLeft + tuningX;
+      curY = e.clientY - canvas.offsetTop + tuningY;
+      updateLatestCoordinates1(curX, curY);
+      hold = true;
+      ctx.fillRect(curX, curY, 3, 3);
+    };
+
+    canvas2.onmousedown = function(e) {
+      curX2 = e.clientX - canvas2.offsetLeft + tuningX;
+      curY2 = e.clientY - canvas2.offsetTop + tuningY;
+      updateLatestCoordinates2(curX2, curY2);
+      hold = true;
+      ctx2.fillRect(curX2, curY2, 3, 3);
+    };
+  }
+  window.onload = function() {
+    onload1();
+    onload2();
+    listen();
+  };
+</script>

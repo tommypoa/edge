@@ -11,7 +11,7 @@ ctx2.fillStyle = "#00FF00";
 var curX, curY;
 var curX2, curY2;
 
-var canvas_data = { "coordinates": []};
+var canvas_data = { coordinates: [] };
 
 // var width = canvas.width, height = canvas.height;
 // var fill_value = true, stroke_value = false;
@@ -19,40 +19,40 @@ var canvas_data = { "coordinates": []};
 
 // Tuning parameters
 
-var tuningX = -6
-var tuningY = -4
+var tuningX = -6;
+var tuningY = -4;
 
 // Helper Functions
 
 function onload1() {
-    var background = new Image();
-    background.src = document.currentScript.getAttribute("img");
-    background.onload = () => {
-    ctx.drawImage(background, 0, 0, 512, 512);   
-    }
+  var background = new Image();
+  background.src = document.currentScript.getAttribute("img");
+  background.onload = () => {
+    ctx.drawImage(background, 0, 0, 512, 512);
+  };
 }
 function onload2() {
-    var background = new Image();
-    background.src = document.currentScript.getAttribute("img2");
-    background.onload = () => {
-    ctx2.drawImage(background, 0, 0, 512, 512);   
-    }
+  var background = new Image();
+  background.src = document.currentScript.getAttribute("img2");
+  background.onload = () => {
+    ctx2.drawImage(background, 0, 0, 512, 512);
+  };
 }
 
 function listen() {
-    canvas.onmousedown = function (e){
-        curX = e.clientX - canvas.offsetLeft + tuningX;
-        curY = e.clientY - canvas.offsetTop + tuningY;
-        hold = true;
-        ctx.fillRect(curX,curY,3,3);
-    }
+  canvas.onmousedown = function(e) {
+    curX = e.clientX - canvas.offsetLeft + tuningX;
+    curY = e.clientY - canvas.offsetTop + tuningY;
+    hold = true;
+    ctx.fillRect(curX, curY, 3, 3);
+  };
 
-    canvas2.onmousedown = function (e){
-        curX2 = e.clientX - canvas2.offsetLeft + tuningX;
-        curY2 = e.clientY - canvas2.offsetTop + tuningY;
-        hold = true;
-        ctx2.fillRect(curX2,curY2,3,3);
-    }
+  canvas2.onmousedown = function(e) {
+    curX2 = e.clientX - canvas2.offsetLeft + tuningX;
+    curY2 = e.clientY - canvas2.offsetTop + tuningY;
+    hold = true;
+    ctx2.fillRect(curX2, curY2, 3, 3);
+  };
 }
 
 // Main execution
