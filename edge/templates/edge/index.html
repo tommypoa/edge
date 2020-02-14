@@ -1,6 +1,7 @@
 <!-- Set-up -->
-{% load static %}
+{% load static %} {% csrf_token %}
 <link rel="stylesheet" type="text/css" href="{% static 'edge/style.css' %}" />
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
 <!-- Intro; consider moving to base.html -->
 <h1>Global Policy Lab | Aerial History Project</h1>
@@ -51,8 +52,25 @@
 
 
 -->
-
 <script language="javascript">
+  //   // CSRF
+  //   function getCookie(name) {
+  //     var cookieValue = null;
+  //     if (document.cookie && document.cookie !== "") {
+  //       var cookies = document.cookie.split(";");
+  //       for (var i = 0; i < cookies.length; i++) {
+  //         var cookie = cookies[i].trim();
+  //         // Does this cookie string begin with the name we want?
+  //         if (cookie.substring(0, name.length + 1) === name + "=") {
+  //           cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+  //           break;
+  //         }
+  //       }
+  //     }
+  //     return cookieValue;
+  //   }
+  //   var csrftoken = getCookie("csrftoken");
+
   var canvas = document.getElementById("im1");
   var ctx = canvas.getContext("2d");
   ctx.fillStyle = "#FF0000";
@@ -73,7 +91,31 @@
 
   // Helper Functions
   function saveCoordinates() {
-    return;
+    // var curX = curX;
+    // var curY = curY;
+    // var curX2 = curX2;
+    // var curY2 = curY2;
+    $.ajax({
+      type: "POST",
+      //   url: "/edge/save/",
+      url: '{% url "edge:save" %}',
+      data: {
+        im1_name: "{{image_list.0.0}}",
+        im2_name: "{{image_list.1.0}}",
+        im1_x: curX,
+        im1_y: curY,
+        im2_x: curX2,
+        im2_y: curY2,
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+      },
+      dataType: "json",
+      success: function(data) {
+        alert("Successfully saved coordinate.");
+      },
+      failure: function(data) {
+        alert("Failed!");
+      }
+    });
   }
 
   function updateLatestCoordinates1(curX, curY) {
