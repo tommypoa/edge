@@ -28,14 +28,14 @@ function onload1() {
     var background = new Image();
     background.src = document.currentScript.getAttribute("img");
     background.onload = () => {
-    ctx.drawImage(background, 0, 0, 256, 256);   
+    ctx.drawImage(background, 0, 0, 512, 512);   
     }
 }
 function onload2() {
     var background = new Image();
     background.src = document.currentScript.getAttribute("img2");
     background.onload = () => {
-    ctx2.drawImage(background, 0, 0, 256, 256);   
+    ctx2.drawImage(background, 0, 0, 512, 512);   
     }
 }
 

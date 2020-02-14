@@ -11,7 +11,7 @@
     <div class="row">
         {% for image, imnum in image_list %}
             <div class="column">
-                <h2>image 1: {{ image|slice:"5:" }}</h2>
+                <h2>{{imnum}}: {{ image|slice:"5:" }}</h2>
                 {% if image %}
                     <ul>
                         <canvas id={{imnum}} width="256" height="256" style="border: 5px solid #000000;"></canvas>

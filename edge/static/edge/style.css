@@ -1,10 +1,7 @@
-body {
-    background: rgb(216, 216, 216) url("images/background.gif") no-repeat;
-}
+/* body {
+    background: rgb(216, 216, 216) no-repeat;
+} */
 
-li {
-    color: green;
-}
 
 .row {
     display: flex;
