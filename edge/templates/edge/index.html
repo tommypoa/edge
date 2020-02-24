@@ -21,7 +21,8 @@
           height="512"
           style="border: 5px solid #000000;"
         ></canvas>
-        <a id="{{imnum}}Coordinates"></a>
+        <h2>Coordinate:</h2>
+        <h2 id="{{imnum}}Coordinates"></h2>
       </ul>
       {% else %}
       <h1><p>Try reloading photo.</p></h1>
@@ -31,46 +32,19 @@
   </div>
 </column>
 
+<!-- Save points button -->
+<button style=onclick="recordCoordinates();"> Record</button>
+
+<!-- Script visualization button -->
+<button style=onclick="visualizeMerge();"> Visualize</button>
+
 <!-- Post button -->
-<button onclick="saveCoordinates();"></button>
+<button onclick="saveCoordinates();">Save coordinates</button>
 
 <!-- Output photo -->
 <h1>Output [pending]</h1>
 
-<!-- <script
-  src="{% static 'edge/js/script.js' %}"
-  img="{% static image_list.0.0 %}"
-  img2="{% static image_list.1.0 %}"
->
-  var a = "{{tuningX}}";
-</script> -->
-
-<!--
-    
-    
-    -------------- SCRIPT ----------------
-
-
--->
 <script language="javascript">
-  //   // CSRF
-  //   function getCookie(name) {
-  //     var cookieValue = null;
-  //     if (document.cookie && document.cookie !== "") {
-  //       var cookies = document.cookie.split(";");
-  //       for (var i = 0; i < cookies.length; i++) {
-  //         var cookie = cookies[i].trim();
-  //         // Does this cookie string begin with the name we want?
-  //         if (cookie.substring(0, name.length + 1) === name + "=") {
-  //           cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-  //           break;
-  //         }
-  //       }
-  //     }
-  //     return cookieValue;
-  //   }
-  //   var csrftoken = getCookie("csrftoken");
-
   var canvas = document.getElementById("im1");
   var ctx = canvas.getContext("2d");
   ctx.fillStyle = "#FF0000";
@@ -147,7 +121,7 @@
       curY = e.clientY - canvas.offsetTop + tuningY;
       updateLatestCoordinates1(curX, curY);
       hold = true;
-      ctx.fillRect(curX, curY, 3, 3);
+      ctx.fillRect(curX, curY, 5, 5);
     };
 
     canvas2.onmousedown = function(e) {
@@ -155,7 +129,7 @@
       curY2 = e.clientY - canvas2.offsetTop + tuningY;
       updateLatestCoordinates2(curX2, curY2);
       hold = true;
-      ctx2.fillRect(curX2, curY2, 3, 3);
+      ctx2.fillRect(curX2, curY2, 5, 5);
     };
   }
   window.onload = function() {
