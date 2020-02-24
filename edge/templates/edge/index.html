@@ -33,16 +33,18 @@
 </column>
 
 <!-- Save points button -->
-<button style=onclick="recordCoordinates();"> Record</button>
+<button onclick="recordCoordinates();">Record</button>
 
 <!-- Script visualization button -->
-<button style=onclick="visualizeMerge();"> Visualize</button>
+<button onclick="visualizeMerge();">Visualize</button>
 
 <!-- Post button -->
 <button onclick="saveCoordinates();">Save coordinates</button>
 
 <!-- Output photo -->
-<h1>Output [pending]</h1>
+<h1>Visualization</h1>
+
+<img id='visualization' width="512" height="512" style="border:3px solid black"></img>
 
 <script language="javascript">
   var canvas = document.getElementById("im1");
@@ -56,7 +58,8 @@
   var curX, curY;
   var curX2, curY2;
 
-  var canvas_data = [];
+  var current_point = [];
+  var points = [];
 
   // Tuning parameters
 
@@ -64,6 +67,28 @@
   var tuningY = 0;
 
   // Helper Functions
+
+  function visualizeMerge() {
+    console.log(points)
+    $.ajax({
+      type: "POST",
+      url: '{% url "edge:visualize" %}',
+      data: {
+        csrfmiddlewaretoken: "{{ csrf_token }}",
+        points: points
+      },
+      dataType: "json",
+      success: function(data) {
+        document.getElementById("visualization").src = data.url
+        alert("Successfully visualized.");
+        // alert(document.getElementById("im0").src)
+      },
+      failure: function(data) {
+        alert("Failed visualization!");
+      }
+    });
+  }
+
   function saveCoordinates() {
     // var curX = curX;
     // var curY = curY;
@@ -93,16 +118,25 @@
   }
 
   function updateLatestCoordinates1(curX, curY) {
+    current_point.push(curX * 4900 / 512)
+    current_point.push(curY * 4900 / 512)
     document.getElementById("im1Coordinates").innerHTML = curX + " " + curY;
   }
 
   function updateLatestCoordinates2(curX2, curY2) {
+    current_point.push(curX2 * 4900 / 512)
+    current_point.push(curY2 * 4900 / 512)
+    points.push(current_point)
+    current_point = []
     document.getElementById("im2Coordinates").innerHTML = curX2 + " " + curY2;
+    console.log(current_point)
+    console.log(points)
   }
 
   function onload1() {
     var background = new Image();
     background.src = "{% static image_list.0.0 %}";
+    console.log(background.src)
     background.onload = () => {
       ctx.drawImage(background, 0, 0, 512, 512);
     };

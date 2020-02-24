@@ -5,5 +5,6 @@ from . import views
 app_name = 'edge'
 urlpatterns = [
     path('', views.index, name='index'),
-    path('save', views.save, name='save')
+    path('save', views.save, name='save'),
+    path('visualize', views.visualize, name='visualize')
 ]
