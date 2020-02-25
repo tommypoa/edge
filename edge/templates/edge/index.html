@@ -84,6 +84,7 @@
 
   var current_point = [];
   var points = [];
+  var clickLock = true;
 
 
   // Helper Functions
@@ -102,7 +103,10 @@
   }
 
   function visualizeMerge() {
-    $.ajax({
+    if (points.length < 2) {
+      alert("2 or more points needed before you can visualize. Select more pair of points!")
+    } else {
+      $.ajax({
       type: "POST",
       url: '{% url "edge:visualize" %}',
       data: {
@@ -120,9 +124,13 @@
       }
     });
   }
+  }
 
   function saveCoordinates() {
-    $.ajax({
+    if (points.length < 2) {
+      alert("2 or more points needed before you can save. Select more pair of points and visualize them before saving!")
+    } else {
+      $.ajax({
       type: "POST",
       url: '{% url "edge:save" %}',
       data: {
@@ -141,6 +149,8 @@
         alert("Failed!");
       }
     });
+    }
+    
   }
 
   function updateLatestCoordinates1(curX1, curY1) {
@@ -181,19 +191,30 @@
 
   function listen() {
     canvas1.onmousedown = function(e) {
-      curX1 = e.clientX - canvas1.getBoundingClientRect().left;
-      curY1 = e.clientY - canvas1.getBoundingClientRect().top;
-      hold = true;
-      ctx1.fillRect(curX1, curY1, 5, 5);
-      updateLatestCoordinates1(curX1, curY1);
+      if (!clickLock) {
+        alert("Pick a point on Image 2 to pair with the point you just selected! \n\n Press the white clear button to restart.")
+      } else {
+        curX1 = e.clientX - canvas1.getBoundingClientRect().left;
+        curY1 = e.clientY - canvas1.getBoundingClientRect().top;
+        hold = true;
+        ctx1.fillRect(curX1, curY1, 5, 5);
+        updateLatestCoordinates1(curX1, curY1);
+        clickLock = false;
+      }
     };
 
     canvas2.onmousedown = function(e) {
-      curX2 = e.clientX - canvas2.getBoundingClientRect().left;
-      curY2 = e.clientY - canvas2.getBoundingClientRect().top;
-      hold = true;
-      ctx2.fillRect(curX2, curY2, 5, 5);
-      updateLatestCoordinates2(curX2, curY2);
+      if (clickLock) {
+        alert("Pick a new starting point in Image 1 first! \n\n Press the white clear button to restart.")
+      } else {
+        curX2 = e.clientX - canvas2.getBoundingClientRect().left;
+        curY2 = e.clientY - canvas2.getBoundingClientRect().top;
+        hold = true;
+        ctx2.fillRect(curX2, curY2, 5, 5);
+        updateLatestCoordinates2(curX2, curY2);
+        clickLock = true;
+      }
+      
     };
   }
   window.onload = function() {
@@ -206,7 +227,8 @@
 <style>
   .column {
   flex: 50%;
-  padding: 5px;
+  /* padding: 20px; */
+  margin-left: 1%
   }
   .button-row {
     margin-left: 1%;
