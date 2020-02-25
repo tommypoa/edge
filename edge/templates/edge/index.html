@@ -61,6 +61,13 @@
       Save coordinates
     </h2>
   </button>
+
+  <!-- Clear button -->
+  <button onclick="clearAll();">
+    <h2>
+      Clear
+    </h2>
+  </button>
 </div>
 
 
@@ -86,12 +93,20 @@
   var current_point = [];
   var points = [];
 
-  // Tuning parameters
-
-  var tuningX = 0;
-  var tuningY = 0;
-
   // Helper Functions
+
+  function clearAll() {
+    points = []
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+    document.getElementById("visualization").src = "";
+
+    document.getElementById("im1Coordinates").innerHTML = "";
+    document.getElementById("im2Coordinates").innerHTML = "";
+    onload1()
+    onload2()
+    alert("Cleared!")
+  }
 
   function visualizeMerge() {
     console.log(points)
@@ -171,16 +186,16 @@
 
   function listen() {
     canvas.onmousedown = function(e) {
-      curX = e.clientX - canvas.offsetLeft + tuningX;
-      curY = e.clientY - canvas.offsetTop + tuningY;
+      curX = e.clientX - canvas.getBoundingClientRect().left;
+      curY = e.clientY - canvas.getBoundingClientRect().top;
       updateLatestCoordinates1(curX, curY);
       hold = true;
       ctx.fillRect(curX, curY, 5, 5);
     };
 
     canvas2.onmousedown = function(e) {
-      curX2 = e.clientX - canvas2.offsetLeft + tuningX;
-      curY2 = e.clientY - canvas2.offsetTop + tuningY;
+      curX2 = e.clientX - canvas2.getBoundingClientRect().left;
+      curY2 = e.clientY - canvas2.getBoundingClientRect().top;
       updateLatestCoordinates2(curX2, curY2);
       hold = true;
       ctx2.fillRect(curX2, curY2, 5, 5);
