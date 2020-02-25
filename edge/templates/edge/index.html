@@ -3,18 +3,33 @@
 <link rel="stylesheet" type="text/css" href="{% static 'edge/style.css' %}" />
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
+<style>
+  .column {
+  flex: 50%;
+  padding: 5px;
+  }
+  .button-row {
+    margin-left: 1%;
+  }
+  .image-container {
+    /* padding: % */
+  }
+  h1 {
+    padding: 1%
+  }
+</style>
+
 <!-- Intro; consider moving to base.html -->
-<h1>Global Policy Lab | Aerial History Project</h1>
-<h1>Stitching</h1>
+<h1>Global Policy Lab | Aerial History Project | Stitching</h1>
 
 <!-- Edge photos -->
+<h1>Input photos</h1>
 <column>
   <div class="row">
     {% for image, imnum in image_list %}
     <div class="column">
-      <h2>{{imnum}}: {{ image|slice:"5:" }}</h2>
+      <h2>Image {{imnum|slice:"2:"}}: {{ image|slice:"5:" }}</h2>
       {% if image %}
-      <ul>
         <canvas
           id="{{imnum}}"
           width="512"
@@ -23,28 +38,38 @@
         ></canvas>
         <h2>Coordinate:</h2>
         <h2 id="{{imnum}}Coordinates"></h2>
-      </ul>
       {% else %}
-      <h1><p>Try reloading photo.</p></h1>
+        <h1><p>Try reloading photo.</p></h1>
       {% endif %}
     </div>
     {% endfor %}
   </div>
 </column>
 
+<div class="button-row">
 <!-- Save points button -->
-<button onclick="recordCoordinates();">Record</button>
+  <!-- <button onclick="recordCoordinates();">Record</button> -->
 
-<!-- Script visualization button -->
-<button onclick="visualizeMerge();">Visualize</button>
+  <!-- Script visualization button -->
+  <button onclick="visualizeMerge();">
+    <h2>Visualize</h2>
+  </button>
 
-<!-- Post button -->
-<button onclick="saveCoordinates();">Save coordinates</button>
+  <!-- Post button -->
+  <button onclick="saveCoordinates();">
+    <h2>
+      Save coordinates
+    </h2>
+  </button>
+</div>
+
 
 <!-- Output photo -->
 <h1>Visualization</h1>
+<div class="image-container">
+  <img id='visualization' width="512" height="512" style="border:3px solid black"></img>
+</div>
 
-<img id='visualization' width="512" height="512" style="border:3px solid black"></img>
 
 <script language="javascript">
   var canvas = document.getElementById("im1");
@@ -90,13 +115,8 @@
   }
 
   function saveCoordinates() {
-    // var curX = curX;
-    // var curY = curY;
-    // var curX2 = curX2;
-    // var curY2 = curY2;
     $.ajax({
       type: "POST",
-      //   url: "/edge/save/",
       url: '{% url "edge:save" %}',
       data: {
         im1_name: "{{image_list.0.0}}",
@@ -120,7 +140,7 @@
   function updateLatestCoordinates1(curX, curY) {
     current_point.push(curX * 4900 / 512)
     current_point.push(curY * 4900 / 512)
-    document.getElementById("im1Coordinates").innerHTML = curX + " " + curY;
+    document.getElementById("im1Coordinates").innerHTML = curX * 4900 / 512 + " // " + curY * 4900 / 512;
   }
 
   function updateLatestCoordinates2(curX2, curY2) {
@@ -128,7 +148,7 @@
     current_point.push(curY2 * 4900 / 512)
     points.push(current_point)
     current_point = []
-    document.getElementById("im2Coordinates").innerHTML = curX2 + " " + curY2;
+    document.getElementById("im2Coordinates").innerHTML = curX2 * 4900 / 512 + " // " + curY2 * 4900 / 512;
     console.log(current_point)
     console.log(points)
   }
