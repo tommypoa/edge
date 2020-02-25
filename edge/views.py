@@ -4,7 +4,7 @@ from django.utils import timezone
 from .models import Coordinate
 import logging
 from django.http import JsonResponse
-import cv2 as cv
+# import cv2 as cv
 import pandas as pd
 from PIL import Image
 import numpy as np
