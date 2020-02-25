@@ -79,19 +79,24 @@
 
 
 <script language="javascript">
+  var colors = ['#ff0000', '#00ff00', '#00bbff', '#ff00ff', '#ffff00']
+  var colorIndex = 4
+
   var canvas = document.getElementById("im1");
   var ctx = canvas.getContext("2d");
-  ctx.fillStyle = "#FF0000";
+  ctx.fillStyle = colors[colorIndex]
 
   var canvas2 = document.getElementById("im2");
   var ctx2 = canvas2.getContext("2d");
-  ctx2.fillStyle = "#00FF00";
+  ctx2.fillStyle = colors[colorIndex]
 
   var curX, curY;
   var curX2, curY2;
 
   var current_point = [];
   var points = [];
+
+
 
   // Helper Functions
 
@@ -121,7 +126,6 @@
       success: function(data) {
         document.getElementById("visualization").src = data.url
         alert("Successfully visualized.");
-        // alert(document.getElementById("im0").src)
       },
       failure: function(data) {
         alert("Failed visualization!");
@@ -164,6 +168,9 @@
     points.push(current_point)
     current_point = []
     document.getElementById("im2Coordinates").innerHTML = curX2 * 4900 / 512 + " // " + curY2 * 4900 / 512;
+    colorIndex = (colorIndex + 1) % 5
+    ctx.fillStyle = colors[colorIndex]
+    ctx2.fillStyle = colors[colorIndex]
     console.log(current_point)
     console.log(points)
   }
@@ -188,17 +195,17 @@
     canvas.onmousedown = function(e) {
       curX = e.clientX - canvas.getBoundingClientRect().left;
       curY = e.clientY - canvas.getBoundingClientRect().top;
-      updateLatestCoordinates1(curX, curY);
       hold = true;
       ctx.fillRect(curX, curY, 5, 5);
+      updateLatestCoordinates1(curX, curY);
     };
 
     canvas2.onmousedown = function(e) {
       curX2 = e.clientX - canvas2.getBoundingClientRect().left;
       curY2 = e.clientY - canvas2.getBoundingClientRect().top;
-      updateLatestCoordinates2(curX2, curY2);
       hold = true;
       ctx2.fillRect(curX2, curY2, 5, 5);
+      updateLatestCoordinates2(curX2, curY2);
     };
   }
   window.onload = function() {
