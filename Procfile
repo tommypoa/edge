@@ -1,0 +1,1 @@
+web: gunicorn edge.wsgi --log-file -
