@@ -1,0 +1,17 @@
+/* body {
+    background: rgb(216, 216, 216) no-repeat;
+} */
+
+.row {
+  display: flex;
+}
+
+.button-row {
+  display: flex;
+  /* padding: 50px; */
+}
+
+.column {
+  flex: 50%;
+  padding: 5px;
+}
