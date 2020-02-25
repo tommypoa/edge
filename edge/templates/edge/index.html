@@ -3,22 +3,6 @@
 <link rel="stylesheet" type="text/css" href="{% static 'edge/style.css' %}" />
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
-<style>
-  .column {
-  flex: 50%;
-  padding: 5px;
-  }
-  .button-row {
-    margin-left: 1%;
-  }
-  .image-container {
-    /* padding: % */
-  }
-  h1 {
-    padding: 1%
-  }
-</style>
-
 <!-- Intro; consider moving to base.html -->
 <h1>Global Policy Lab | Aerial History Project | Stitching</h1>
 
@@ -47,7 +31,7 @@
 </column>
 
 <div class="button-row">
-<!-- Save points button -->
+<!-- Save points button (stretch) -->
   <!-- <button onclick="recordCoordinates();">Record</button> -->
 
   <!-- Script visualization button -->
@@ -77,32 +61,36 @@
   <img id='visualization' width="512" height="512" style="border:3px solid black"></img>
 </div>
 
+<!-- SCRIPT -->
 
 <script language="javascript">
+  // Hard-coded values
+  var canvasWidth = 512
   var colors = ['#ff0000', '#00ff00', '#00bbff', '#ff00ff', '#ffff00']
   var colorIndex = 4
 
-  var canvas = document.getElementById("im1");
-  var ctx = canvas.getContext("2d");
-  ctx.fillStyle = colors[colorIndex]
+  // Cavas + color set-up
+  var canvas1 = document.getElementById("im1");
+  var ctx1 = canvas1.getContext("2d");
+  ctx1.fillStyle = colors[colorIndex]
 
   var canvas2 = document.getElementById("im2");
   var ctx2 = canvas2.getContext("2d");
   ctx2.fillStyle = colors[colorIndex]
 
-  var curX, curY;
-  var curX2, curY2;
+  // Variable definition
+  var curX1, curY1, curX2, curY2;
+  var im1NaturalWidth, im1NaturalHeight, im2NaturalWidth, im2NaturalHeight
 
   var current_point = [];
   var points = [];
-
 
 
   // Helper Functions
 
   function clearAll() {
     points = []
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx1.clearRect(0, 0, canvas1.width, canvas1.height);
     ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
     document.getElementById("visualization").src = "";
 
@@ -114,7 +102,6 @@
   }
 
   function visualizeMerge() {
-    console.log(points)
     $.ajax({
       type: "POST",
       url: '{% url "edge:visualize" %}',
@@ -125,7 +112,7 @@
       dataType: "json",
       success: function(data) {
         document.getElementById("visualization").src = data.url
-        alert("Successfully visualized.");
+        alert("Successfully visualized – see output below.");
       },
       failure: function(data) {
         alert("Failed visualization!");
@@ -140,8 +127,8 @@
       data: {
         im1_name: "{{image_list.0.0}}",
         im2_name: "{{image_list.1.0}}",
-        im1_x: curX,
-        im1_y: curY,
+        im1_x: curX1,
+        im1_y: curY1,
         im2_x: curX2,
         im2_y: curY2,
         csrfmiddlewaretoken: "{{ csrf_token }}"
@@ -149,6 +136,7 @@
       dataType: "json",
       success: function(data) {
         alert("Successfully saved coordinate.");
+        clearAll();
       },
       failure: function(data) {
         alert("Failed!");
@@ -156,48 +144,49 @@
     });
   }
 
-  function updateLatestCoordinates1(curX, curY) {
-    current_point.push(curX * 4900 / 512)
-    current_point.push(curY * 4900 / 512)
-    document.getElementById("im1Coordinates").innerHTML = curX * 4900 / 512 + " // " + curY * 4900 / 512;
+  function updateLatestCoordinates1(curX1, curY1) {
+    current_point.push(curX1 * im1NaturalWidth / canvasWidth)
+    current_point.push(curY1 * im1NaturalHeight / canvasWidth)
+    document.getElementById("im1Coordinates").innerHTML = curX1 * im1NaturalWidth / canvasWidth + " // " + curY1 * im1NaturalHeight / canvasWidth;
   }
 
   function updateLatestCoordinates2(curX2, curY2) {
-    current_point.push(curX2 * 4900 / 512)
-    current_point.push(curY2 * 4900 / 512)
+    current_point.push(curX2 * im1NaturalWidth / canvasWidth)
+    current_point.push(curY2 * im1NaturalHeight / canvasWidth)
     points.push(current_point)
     current_point = []
-    document.getElementById("im2Coordinates").innerHTML = curX2 * 4900 / 512 + " // " + curY2 * 4900 / 512;
+    document.getElementById("im2Coordinates").innerHTML = curX2 * im1NaturalWidth / canvasWidth + " // " + curY2 * im1NaturalHeight / canvasWidth;
     colorIndex = (colorIndex + 1) % 5
-    ctx.fillStyle = colors[colorIndex]
+    ctx1.fillStyle = colors[colorIndex]
     ctx2.fillStyle = colors[colorIndex]
-    console.log(current_point)
-    console.log(points)
   }
 
   function onload1() {
     var background = new Image();
     background.src = "{% static image_list.0.0 %}";
-    console.log(background.src)
     background.onload = () => {
-      ctx.drawImage(background, 0, 0, 512, 512);
+      ctx1.drawImage(background, 0, 0, canvasWidth, canvasWidth);
+      im1NaturalHeight = background.naturalHeight;
+      im1NaturalWidth = background.naturalWidth;
     };
   }
   function onload2() {
     var background = new Image();
     background.src = "{% static image_list.1.0 %}";
     background.onload = () => {
-      ctx2.drawImage(background, 0, 0, 512, 512);
+      ctx2.drawImage(background, 0, 0, canvasWidth, canvasWidth);
+      im2NaturalHeight = background.naturalHeight;
+      im2NaturalWidth = background.naturalWidth;
     };
   }
 
   function listen() {
-    canvas.onmousedown = function(e) {
-      curX = e.clientX - canvas.getBoundingClientRect().left;
-      curY = e.clientY - canvas.getBoundingClientRect().top;
+    canvas1.onmousedown = function(e) {
+      curX1 = e.clientX - canvas1.getBoundingClientRect().left;
+      curY1 = e.clientY - canvas1.getBoundingClientRect().top;
       hold = true;
-      ctx.fillRect(curX, curY, 5, 5);
-      updateLatestCoordinates1(curX, curY);
+      ctx1.fillRect(curX1, curY1, 5, 5);
+      updateLatestCoordinates1(curX1, curY1);
     };
 
     canvas2.onmousedown = function(e) {
@@ -214,3 +203,19 @@
     listen();
   };
 </script>
+
+<style>
+  .column {
+  flex: 50%;
+  padding: 5px;
+  }
+  .button-row {
+    margin-left: 1%;
+  }
+  .image-container {
+    /* padding: % */
+  }
+  h1 {
+    padding: 1%
+  }
+</style>
