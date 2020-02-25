@@ -131,26 +131,29 @@
     if (points.length < 2) {
       alert("2 or more points needed before you can save. Select more pair of points and visualize them before saving!")
     } else {
-      $.ajax({
-      type: "POST",
-      url: '{% url "edge:save" %}',
-      data: {
-        im1_name: "{{image_list.0.0}}",
-        im2_name: "{{image_list.1.0}}",
-        numPoints: points.length,
-        points: points,
-        csrfmiddlewaretoken: "{{ csrf_token }}"
-      },
-      dataType: "json",
-      success: function(data) {
-        alert("Successfully saved coordinate.");
-        clearAll();
-      },
-      failure: function(data) {
-        alert("Failed!");
+      if (confirm("Are you ready to save?")) {
+        $.ajax({
+        type: "POST",
+        url: '{% url "edge:save" %}',
+        data: {
+          im1_name: "{{image_list.0.0}}",
+          im2_name: "{{image_list.1.0}}",
+          numPoints: points.length,
+          points: points,
+          csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(data) {
+          alert("Successfully saved coordinate.");
+          clearAll();
+        },
+        failure: function(data) {
+          alert("Failed!");
+        }
+        });
       }
-    });
     }
+      
     
   }
 
