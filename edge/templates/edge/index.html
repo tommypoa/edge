@@ -107,7 +107,8 @@
       url: '{% url "edge:visualize" %}',
       data: {
         csrfmiddlewaretoken: "{{ csrf_token }}",
-        points: points
+        numPoints: points.length,
+        points: points,
       },
       dataType: "json",
       success: function(data) {
@@ -127,10 +128,8 @@
       data: {
         im1_name: "{{image_list.0.0}}",
         im2_name: "{{image_list.1.0}}",
-        im1_x: curX1,
-        im1_y: curY1,
-        im2_x: curX2,
-        im2_y: curY2,
+        numPoints: points.length,
+        points: points,
         csrfmiddlewaretoken: "{{ csrf_token }}"
       },
       dataType: "json",
