@@ -9,10 +9,14 @@ import pandas as pd
 from PIL import Image
 import numpy as np
 
+im1_path = "edge/CAP_DOS_2_CAR_0024__0081.jpg"
+im2_path = "edge/CAP_DOS_2_CAR_0024__0082.jpg"
+visualization_output_path = "edge/static/edge/last_visualization.jpg"
+point_format_path = "edge/world/df_format.points"
 
 def index(request):
     # image_url = <connection to server to get NCAP images>. Local for now.
-    image_list = [("edge/CAP_DOS_2_CAR_0024__0081.jpg","im1"), ("edge/CAP_DOS_2_CAR_0024__0082.jpg", "im2")]
+    image_list = [(im1_path, "im1"), (im2_path, "im2")]
     context = {
         'image_list': image_list,
     }
@@ -37,8 +41,7 @@ def save(request):
     return JsonResponse({})
 
 def visualize(request):
-    file = 'edge/world/df_format.points'
-    df = pd.read_csv(file)
+    df = pd.read_csv(point_format_path)
 
     length = request.POST.get('numPoints')
     for pointNum in range(int(length)):
@@ -51,8 +54,8 @@ def visualize(request):
         np.float32(im2), np.float32(im1),
         method=cv.LMEDS)
 
-    img1_file = 'edge/static/edge/CAP_DOS_2_CAR_0024__0081.jpg'
-    img2_file = 'edge/static/edge/CAP_DOS_2_CAR_0024__0082.jpg'
+    img1_file = "edge/static/" + im1_path
+    img2_file = "edge/static/" + im2_path
     img1 = cv.imread(img1_file, cv.IMREAD_GRAYSCALE)
     img2 = cv.imread(img2_file, cv.IMREAD_GRAYSCALE)
 
@@ -60,7 +63,7 @@ def visualize(request):
     img_overlay = cv.warpAffine(src=img2, M=trans, dsize=img1.shape[::-1])
     # overlay with 50% transparency
     img_overlay = cv.addWeighted(img1, 0.5, img_overlay, 0.5, gamma=0.0)
-    output_url = 'edge/static/edge/last_visualization.jpg'
+    output_url = visualization_output_path
     cv.imwrite(output_url, img_overlay)
     response_data = {'url': output_url[4:]}
     return JsonResponse(response_data)
