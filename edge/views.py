@@ -4,10 +4,10 @@ from django.utils import timezone
 from .models import Coordinate
 import logging
 from django.http import JsonResponse
-import cv2 as cv
-import pandas as pd
-from PIL import Image
-import numpy as np
+# import cv2 as cv
+# import pandas as pd
+# from PIL import Image
+# import numpy as np
 
 im1_path = "edge/CAP_DOS_2_CAR_0024__0081.jpg"
 im2_path = "edge/CAP_DOS_2_CAR_0024__0082.jpg"
