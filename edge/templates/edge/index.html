@@ -40,7 +40,7 @@
   </button>
 
   <!-- Post button -->
-  <button onclick="saveCoordinates();">
+  <button onclick="saveCoordinates(false);">
     <h2>
       Save coordinates
     </h2>
@@ -52,6 +52,13 @@
       Clear
     </h2>
   </button>
+
+    <!-- Clear button -->
+    <button onclick="skip();">
+      <h2>
+        No matching points found.
+      </h2>
+    </button>
 </div>
 
 <br><br>
@@ -90,6 +97,13 @@
 
   // Helper Functions
 
+  function skip() {
+    if (confirm("Are you sure you want to skip?")) {
+      points = [[0, 0, 0, 0]]
+      saveCoordinates(true);
+    }
+  }
+
   function clearAll() {
     points = []
     ctx1.clearRect(0, 0, canvas1.width, canvas1.height);
@@ -127,11 +141,11 @@
   }
   }
 
-  function saveCoordinates() {
-    if (points.length < 2) {
+  function saveCoordinates(skip) {
+    if (!skip && points.length < 2) {
       alert("2 or more points needed before you can save. Select more pair of points and visualize them before saving!")
     } else {
-      if (confirm("Are you ready to save?")) {
+      if (skip || confirm("Are you ready to save?")) {
         $.ajax({
         type: "POST",
         url: '{% url "edge:save" %}',
@@ -144,7 +158,9 @@
         },
         dataType: "json",
         success: function(data) {
-          alert("Successfully saved coordinate.");
+          if (!skip) {
+            alert("Successfully saved coordinate.");
+          }
           clearAll();
         },
         failure: function(data) {

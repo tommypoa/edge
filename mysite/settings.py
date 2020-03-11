@@ -144,7 +144,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ALLOWED_HOSTS = ['gpl-edge.herokuapp.com']
+ALLOWED_HOSTS = ['gpl-edge.herokuapp.com', 'localhost']
 
 
 import dj_database_url 
