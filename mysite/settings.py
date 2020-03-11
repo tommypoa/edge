@@ -145,7 +145,7 @@ MIDDLEWARE = [
 ]
 
 ALLOWED_HOSTS = ['gpl-edge.herokuapp.com', 'localhost', 'manual-stitch.azurewebsites.net']
-PYTHONPATH = 'manual-stitch.azurewebsites.net'
+PYTHONPATH = os.path.join(PROJECT_ROOT, 'pymodules')
 
 import dj_database_url 
 prod_db  =  dj_database_url.config(conn_max_age=500)
