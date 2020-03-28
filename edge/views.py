@@ -1,7 +1,9 @@
 from django.shortcuts import render
+from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.utils import timezone
 from .models import Coordinate
+from .models import ImPair
 import logging
 from django.http import JsonResponse
 import cv2 as cv
@@ -9,22 +11,23 @@ import pandas as pd
 from PIL import Image
 import numpy as np
 
-im1_path = "NCAP/Dominica/CAP_DOS_2_CAR_0024__0081.jpg"
-im2_path = "NCAP/Dominica/CAP_DOS_2_CAR_0024__0082.jpg"
 visualization_output_path = "edge/static/NCAP/last_visualization.jpg"
 point_format_path = "edge/world/df_format.points"
 
 def index(request):
     # image_url = <connection to server to get NCAP images>. Local for now.
+    pair_id, im1_path, im2_path = get_next_pair()
     image_list = [(im1_path, "im1"), (im2_path, "im2")]
     context = {
         'image_list': image_list,
+        'pair_id': pair_id
     }
     return render(request, 'edge/index.html', context)
 
 def save(request):
     im1_name = request.POST.get('im1_name')
     im2_name = request.POST.get('im2_name')
+    pair_id = request.POST.get('pair_id')
     length = request.POST.get('numPoints')
 
     for pointNum in range(int(length)):
@@ -38,12 +41,19 @@ def save(request):
             im2_y = pt[3],
             created_at = timezone.now()
         )
+        logger = logging.getLogger(__name__)
+        logger.error(pair_id)
+        ImPair.objects.filter(pk=pair_id).update(linked=True)
+    # return redirect('edge:index')
     return JsonResponse({})
 
 def visualize(request):
     df = pd.read_csv(point_format_path)
 
     length = request.POST.get('numPoints')
+    im1_name = request.POST.get('im1_name')
+    im2_name = request.POST.get('im2_name')
+
     for pointNum in range(int(length)):
         pt = request.POST.getlist('points[' + str(pointNum) + '][]')
         df = df.append(pd.Series(pt, index=df.columns), ignore_index=True)
@@ -54,8 +64,8 @@ def visualize(request):
         np.float32(im2), np.float32(im1),
         method=cv.LMEDS)
 
-    img1_file = "edge/static/" + im1_path
-    img2_file = "edge/static/" + im2_path
+    img1_file = "edge/static/" + im1_name
+    img2_file = "edge/static/" + im2_name
     img1 = cv.imread(img1_file, cv.IMREAD_GRAYSCALE)
     img2 = cv.imread(img2_file, cv.IMREAD_GRAYSCALE)
 
@@ -67,3 +77,16 @@ def visualize(request):
     cv.imwrite(output_url, img_overlay)
     response_data = {'url': output_url[4:]}
     return JsonResponse(response_data)
+
+### HELPER FUNCTIONS
+
+def get_next_pair():
+    unlinked_pairs = ImPair.objects.filter(linked=False)
+    if unlinked_pairs.count() == 0:
+        return []
+    pair = unlinked_pairs[0]
+    im1_name = "NCAP/" + pair.island + "/" + pair.collection_id + "_" + str(f'{pair.im1id0:04}') + \
+        "_" + str(f'{pair.im1id1:04}') + ".jpg"
+    im2_name = "NCAP/" + pair.island + "/" + pair.collection_id + "_" + str(f'{pair.im2id0:04}') + \
+        "_" + str(f'{pair.im2id1:04}') + ".jpg"
+    return [pair.id, im1_name, im2_name]

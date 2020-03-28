@@ -114,7 +114,8 @@
     document.getElementById("im2Coordinates").innerHTML = "";
     onload1()
     onload2()
-    alert("Cleared!")
+    alert("Cleared!");
+    location.reload()
   }
 
   function visualizeMerge() {
@@ -128,6 +129,8 @@
         csrfmiddlewaretoken: "{{ csrf_token }}",
         numPoints: points.length,
         points: points,
+        im1_name: "{{image_list.0.0}}",
+        im2_name: "{{image_list.1.0}}"
       },
       dataType: "json",
       success: function(data) {
@@ -152,6 +155,7 @@
         data: {
           im1_name: "{{image_list.0.0}}",
           im2_name: "{{image_list.1.0}}",
+          pair_id: "{{pair_id}}",
           numPoints: points.length,
           points: points,
           csrfmiddlewaretoken: "{{ csrf_token }}"
@@ -162,6 +166,7 @@
             alert("Successfully saved coordinate.");
           }
           clearAll();
+          
         },
         failure: function(data) {
           alert("Failed!");
@@ -194,6 +199,7 @@
     var background = new Image();
     background.src = "{% static image_list.0.0 %}";
     background.onload = () => {
+      ctx1.clearRect(0, 0, canvas1.width, canvas1.height);
       ctx1.drawImage(background, 0, 0, canvasWidth, canvasWidth);
       im1NaturalHeight = background.naturalHeight;
       im1NaturalWidth = background.naturalWidth;
