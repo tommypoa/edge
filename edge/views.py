@@ -9,10 +9,9 @@ import pandas as pd
 from PIL import Image
 import numpy as np
 
-im1_path = "edge/CAP_DOS_2_CAR_0024__0081.jpg"
-im1_path = "edge/NCAP/Dominica/NCAP_DOS_3_DO_0001_0032.jpg"
-im2_path = "edge/CAP_DOS_2_CAR_0024__0082.jpg"
-visualization_output_path = "edge/static/edge/last_visualization.jpg"
+im1_path = "NCAP/Dominica/CAP_DOS_2_CAR_0024__0081.jpg"
+im2_path = "NCAP/Dominica/CAP_DOS_2_CAR_0024__0082.jpg"
+visualization_output_path = "edge/static/NCAP/last_visualization.jpg"
 point_format_path = "edge/world/df_format.points"
 
 def index(request):
