@@ -40,10 +40,10 @@ def save(request):
         Coordinate.objects.create(
             im1_name = im1_name,
             im2_name = im2_name,
-            im1_x = pt[0],
-            im1_y = pt[1],
-            im2_x = pt[2],
-            im2_y = pt[3],
+            im1_x = str(float(pt[0]) * resizeFactor),
+            im1_y = str(float(pt[1]) * resizeFactor),
+            im2_x = str(float(pt[2]) * resizeFactor),
+            im2_y = str(float(pt[3]) * resizeFactor),
             created_at = timezone.now()
         )
         ImPair.objects.filter(pk=pair_id).update(linked=True)
@@ -79,20 +79,6 @@ def visualize(request):
     response_data = {'url': output_url[4:]}
     return JsonResponse(response_data)
 
-### HELPER FUNCTIONS
-
-def get_next_pair():
-    unlinked_pairs = ImPair.objects.filter(linked=False)
-    if unlinked_pairs.count() == 0:
-        return [None, None, None]
-    pair = unlinked_pairs[0]
-    im1_name = "NCAP/" + pair.island + "/" + pair.collection_id + "_" + str(f'{pair.im1id0:04}') + "/" + \
-        pair.collection_id + "_" + str(f'{pair.im1id0:04}') + "_" + str(f'{pair.im1id1:04}') + ".jpg"
-    im2_name = "NCAP/" + pair.island + "/" + pair.collection_id + "_" + str(f'{pair.im2id0:04}') + "/" + \
-        pair.collection_id + "_" + str(f'{pair.im2id0:04}') + "_" + str(f'{pair.im2id1:04}') + ".jpg"
-    return [pair.id, im1_name, im2_name]
-
-
 def create_links(request):
     with open("edge/static/links.csv") as f:
         reader = csv.reader(f)
@@ -107,3 +93,16 @@ def create_links(request):
                 im2id1 = row[6]
                 )
     return redirect('edge:index')
+
+### HELPER FUNCTIONS
+
+def get_next_pair():
+    unlinked_pairs = ImPair.objects.filter(linked=False)
+    if unlinked_pairs.count() == 0:
+        return [None, None, None]
+    pair = unlinked_pairs[0]
+    im1_name = "NCAP/" + pair.island + "/" + pair.collection_id + "_" + str(f'{pair.im1id0:04}') + "/" + \
+        pair.collection_id + "_" + str(f'{pair.im1id0:04}') + "_" + str(f'{pair.im1id1:04}') + ".jpg"
+    im2_name = "NCAP/" + pair.island + "/" + pair.collection_id + "_" + str(f'{pair.im2id0:04}') + "/" + \
+        pair.collection_id + "_" + str(f'{pair.im2id0:04}') + "_" + str(f'{pair.im2id1:04}') + ".jpg"
+    return [pair.id, im1_name, im2_name]
