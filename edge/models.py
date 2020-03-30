@@ -13,8 +13,8 @@ class ImPair(models.Model):
     linked = models.BooleanField(default=False)
 
     def __str__(self):
-        return "{5} {0}: {1}_{2} and {3}_{4}".format(self.collection_id, self.im1id0, \
-            self.im1id1, self.im2id0, self.im2id1, self.island)
+        return "{0}: {1}_{2} and {3}_{4}".format(self.collection_id, self.im1id0, \
+            self.im1id1, self.im2id0, self.im2id1)
 
 
 class Coordinate(models.Model):

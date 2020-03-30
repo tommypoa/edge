@@ -6,6 +6,9 @@ from import_export.admin import ImportExportModelAdmin
 
 @admin.register(Coordinate)
 class CoordinateAdmin(ImportExportModelAdmin):
-    pass
-admin.site.register(ImPair)
+    list_display = ['__str__', 'created_at']
+    ordering=['created_at']
 
+@admin.register(ImPair)
+class ImPairAdmin(ImportExportModelAdmin):
+    list_display = ['island', '__str__', 'linked']
