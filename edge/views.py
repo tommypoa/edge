@@ -37,6 +37,7 @@ def save(request):
 
     for pointNum in range(int(length)):
         pt = request.POST.getlist('points[' + str(pointNum) + '][]')
+        pair = ImPair.objects.filter(pk=pair_id)
         Coordinate.objects.create(
             im1_name = im1_name,
             im2_name = im2_name,
@@ -44,9 +45,10 @@ def save(request):
             im1_y = str(float(pt[1]) * resizeFactor),
             im2_x = str(float(pt[2]) * resizeFactor),
             im2_y = str(float(pt[3]) * resizeFactor),
+            pair = pair.first(),
             created_at = timezone.now()
         )
-        ImPair.objects.filter(pk=pair_id).update(linked=True)
+        pair.update(linked=True)
     return JsonResponse({})
 
 def visualize(request):
