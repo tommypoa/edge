@@ -93,7 +93,6 @@
   var current_point = [];
   var points = [];
   var clickLock = true;
-  var resizeFactor = 10;
 
   // Helper Functions
 
@@ -178,14 +177,14 @@
   }
 
   function updateLatestCoordinates1(curX1, curY1) {
-    current_point.push((curX1 * im1NaturalWidth / canvasWidth)*resizeFactor)
-    current_point.push((curY1 * im1NaturalHeight / canvasWidth)*resizeFactor)
+    current_point.push((curX1 * im1NaturalWidth / canvasWidth))
+    current_point.push((curY1 * im1NaturalHeight / canvasWidth))
     document.getElementById("im1Coordinates").innerHTML = curX1 * im1NaturalWidth / canvasWidth + " // " + curY1 * im1NaturalHeight / canvasWidth;
   }
 
   function updateLatestCoordinates2(curX2, curY2) {
-    current_point.push((curX2 * im2NaturalWidth / canvasWidth)*resizeFactor)
-    current_point.push((curY2 * im2NaturalHeight / canvasWidth)*resizeFactor)
+    current_point.push((curX2 * im2NaturalWidth / canvasWidth))
+    current_point.push((curY2 * im2NaturalHeight / canvasWidth))
     points.push(current_point)
     current_point = []
     document.getElementById("im2Coordinates").innerHTML = curX2 * im2NaturalWidth / canvasWidth + " // " + curY2 * im2NaturalHeight / canvasWidth;

@@ -15,6 +15,7 @@ import logging
 
 visualization_output_path = "edge/static/NCAP/last_visualization.jpg"
 point_format_path = "edge/world/df_format.points"
+resizeFactor = 10
 
 def index(request):
     # image_url = <connection to server to get NCAP images>. Local for now.
@@ -72,7 +73,7 @@ def visualize(request):
     # fit img1 onto img0
     img_overlay = cv.warpAffine(src=img2, M=trans, dsize=img1.shape[::-1])
     # overlay with 50% transparency
-    # img_overlay = cv.addWeighted(img1, 0.5, img_overlay, 0.5, gamma=0.0)
+    img_overlay = cv.addWeighted(img1, 0.5, img_overlay, 0.5, gamma=0.0)
     output_url = visualization_output_path
     cv.imwrite(output_url, img_overlay)
     response_data = {'url': output_url[4:]}
