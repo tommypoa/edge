@@ -13,8 +13,8 @@ class ImPair(models.Model):
     linked = models.BooleanField(default=False)
 
 class Coordinate(models.Model):
-    im1_name = models.CharField(max_length=50)
-    im2_name = models.CharField(max_length=50)
+    im1_name = models.CharField(max_length=100)
+    im2_name = models.CharField(max_length=100)
     im1_x = models.FloatField()
     im1_y = models.FloatField()
     im2_x = models.FloatField()
