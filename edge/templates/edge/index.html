@@ -7,7 +7,7 @@
 <h1>Global Policy Lab | Aerial History Project | Stitching</h1>
 
 <!-- Edge photos -->
-<h1>Input photos</h1>
+<h1>Input photos [{{island}}]</h1>
 <column>
   <div class="row">
     {% for image, imnum in image_list %}
@@ -76,6 +76,7 @@
   var canvasWidth = 512
   var colors = ['#ff0000', '#00ff00', '#00bbff', '#ff00ff', '#ffff00']
   var colorIndex = 4
+  var resizeFactor = 10
 
   // Cavas + color set-up
   var canvas1 = document.getElementById("im1");
@@ -129,12 +130,14 @@
         numPoints: points.length,
         points: points,
         im1_name: "{{image_list.0.0}}",
-        im2_name: "{{image_list.1.0}}"
+        im2_name: "{{image_list.1.0}}",
+        island: "{{island}}"
       },
       dataType: "json",
       success: function(data) {
-        document.getElementById("visualization").src = data.url
         alert("Successfully visualized – see output below.");
+        document.getElementById("visualization").src = data.url
+
       },
       failure: function(data) {
         alert("Failed visualization!");
@@ -179,7 +182,7 @@
   function updateLatestCoordinates1(curX1, curY1) {
     current_point.push((curX1 * im1NaturalWidth / canvasWidth))
     current_point.push((curY1 * im1NaturalHeight / canvasWidth))
-    document.getElementById("im1Coordinates").innerHTML = curX1 * im1NaturalWidth / canvasWidth + " // " + curY1 * im1NaturalHeight / canvasWidth;
+    document.getElementById("im1Coordinates").innerHTML = curX1 * im1NaturalWidth / canvasWidth * resizeFactor + " // " + curY1 * im1NaturalHeight / canvasWidth * resizeFactor;
   }
 
   function updateLatestCoordinates2(curX2, curY2) {
@@ -187,7 +190,7 @@
     current_point.push((curY2 * im2NaturalHeight / canvasWidth))
     points.push(current_point)
     current_point = []
-    document.getElementById("im2Coordinates").innerHTML = curX2 * im2NaturalWidth / canvasWidth + " // " + curY2 * im2NaturalHeight / canvasWidth;
+    document.getElementById("im2Coordinates").innerHTML = curX2 * im2NaturalWidth / canvasWidth * resizeFactor + " // " + curY2 * im2NaturalHeight / canvasWidth * resizeFactor;
     colorIndex = (colorIndex + 1) % 5
     ctx1.fillStyle = colors[colorIndex]
     ctx2.fillStyle = colors[colorIndex]

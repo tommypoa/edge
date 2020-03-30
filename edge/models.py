@@ -12,6 +12,11 @@ class ImPair(models.Model):
     im2id1 = models.IntegerField()
     linked = models.BooleanField(default=False)
 
+    def __str__(self):
+        return "{5} {0}: {1}_{2} and {3}_{4}".format(self.collection_id, self.im1id0, \
+            self.im1id1, self.im2id0, self.im2id1, self.island)
+
+
 class Coordinate(models.Model):
     im1_name = models.CharField(max_length=100)
     im2_name = models.CharField(max_length=100)
@@ -22,3 +27,5 @@ class Coordinate(models.Model):
     pair = models.ForeignKey(ImPair, blank=True, null=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField()
 
+    def __str__(self):
+        return "Coordinate for " + str(self.pair)

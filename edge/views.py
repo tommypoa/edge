@@ -13,19 +13,24 @@ import numpy as np
 import csv
 import logging
 
-visualization_output_path = "edge/static/NCAP/last_visualization.jpg"
+visualization_output_path = "edge/static/NCAP/"
 point_format_path = "edge/world/df_format.points"
 resizeFactor = 10
 
-def index(request):
+def select_island(request):
+    return render(request, 'edge/select_island.html')
+
+def index(request, island):
     # image_url = <connection to server to get NCAP images>. Local for now.
-    pair_id, im1_path, im2_path = get_next_pair()
+    island, pair_id, im1_path, im2_path = get_next_pair(island)
     if pair_id == None:
-        return render(request, 'edge/completed.html')
+        context = {'island': island}
+        return render(request, 'edge/completed.html', context)
     image_list = [(im1_path, "im1"), (im2_path, "im2")]
     context = {
         'image_list': image_list,
-        'pair_id': pair_id
+        'pair_id': pair_id,
+        'island': island
     }
     return render(request, 'edge/index.html', context)
 
@@ -57,6 +62,7 @@ def visualize(request):
     length = request.POST.get('numPoints')
     im1_name = request.POST.get('im1_name')
     im2_name = request.POST.get('im2_name')
+    island = request.POST.get('island')
 
     for pointNum in range(int(length)):
         pt = request.POST.getlist('points[' + str(pointNum) + '][]')
@@ -76,7 +82,7 @@ def visualize(request):
     img_overlay = cv.warpAffine(src=img2, M=trans, dsize=img1.shape[::-1])
     # overlay with 50% transparency
     img_overlay = cv.addWeighted(img1, 0.5, img_overlay, 0.5, gamma=0.0)
-    output_url = visualization_output_path
+    output_url = visualization_output_path + island + "_visualization.jpg"
     cv.imwrite(output_url, img_overlay)
     response_data = {'url': output_url[4:]}
     return JsonResponse(response_data)
@@ -98,13 +104,13 @@ def create_links(request):
 
 ### HELPER FUNCTIONS
 
-def get_next_pair():
-    unlinked_pairs = ImPair.objects.filter(linked=False)
+def get_next_pair(island):
+    unlinked_pairs = ImPair.objects.filter(linked=False, island=island)
     if unlinked_pairs.count() == 0:
-        return [None, None, None]
+        return [None, None, None, None]
     pair = unlinked_pairs[0]
     im1_name = "NCAP/" + pair.island + "/" + pair.collection_id + "_" + str(f'{pair.im1id0:04}') + "/" + \
         pair.collection_id + "_" + str(f'{pair.im1id0:04}') + "_" + str(f'{pair.im1id1:04}') + ".jpg"
     im2_name = "NCAP/" + pair.island + "/" + pair.collection_id + "_" + str(f'{pair.im2id0:04}') + "/" + \
         pair.collection_id + "_" + str(f'{pair.im2id0:04}') + "_" + str(f'{pair.im2id1:04}') + ".jpg"
-    return [pair.id, im1_name, im2_name]
+    return [island, pair.id, im1_name, im2_name]
