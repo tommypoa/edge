@@ -20,4 +20,3 @@ class ImPair(models.Model):
     im2id0 = models.IntegerField()
     im2id1 = models.IntegerField()
     linked = models.BooleanField(default=False)
-    created_at = models.DateTimeField()
