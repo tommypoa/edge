@@ -9,7 +9,7 @@ import csv
 load_dotenv()
 storage_account = "ncapdata"
 access_key = os.getenv("ACCESS_KEY")
-containers = ["virginislands", "stvincentgrenadines", "stlucia"]
+containers = ["virginislands"] #, "stvincentgrenadines", "stlucia"]
 static_path = os.getcwd() + "/edge/static/"
 image_list = set()
 scale_factor = 10
@@ -47,13 +47,18 @@ def read_links():
 
 ### Downloader
 def download_images():
+    print(image_list)
     for container in containers:
         cd_to_container(container)
         block_blob_service = BlockBlobService(account_name=storage_account, account_key=access_key)
         generator = block_blob_service.list_blobs(container)
         for blob in generator:
+            print(blob.name, "\n")
             if blob.name[:-4] in image_list:
                 print("Downloading " + container + "/" + blob.name)
+                if os.path.exists(os.getcwd() + "/" + blob.name):
+                    print("Already downloaded.")
+                    continue
                 #check if the path contains a folder structure, create the folder structure
                 if "/" in "{}".format(blob.name):
                     #extract the folder path and check if that folder exists locally, and if not create it

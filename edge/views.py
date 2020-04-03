@@ -12,6 +12,7 @@ from PIL import Image
 import numpy as np
 import csv
 import logging
+import os
 
 visualization_output_path = "edge/static/NCAP/"
 point_format_path = "edge/world/df_format.points"
@@ -19,7 +20,12 @@ resizeFactor = 10
 islands = ["dominica", "montserrat", "caymanislands", "jamaica", "virginislands", "stvincentgrenadines", "stlucia"]
 
 def select_island(request):
-    context = {'islands': islands}
+    island_completion_count = []
+    for island in islands:
+        current_set = ImPair.objects.filter(island=island)
+        current_set_linked = current_set.filter(linked=True)
+        island_completion_count.append([island, current_set_linked.count, current_set.count])
+    context = {'island_counts': island_completion_count}
     return render(request, 'edge/select_island.html', context)
 
 def index(request, island):
@@ -115,9 +121,13 @@ def get_next_pair(island):
     unlinked_pairs = ImPair.objects.filter(linked=False, island=island)
     if unlinked_pairs.count() == 0:
         return [None, None, None]
-    pair = unlinked_pairs[0]
-    im1_name = "NCAP/" + pair.island + "/" + pair.collection_id + "_" + str(f'{pair.im1id0:04}') + "/" + \
-        pair.collection_id + "_" + str(f'{pair.im1id0:04}') + "_" + str(f'{pair.im1id1:04}') + ".jpg"
-    im2_name = "NCAP/" + pair.island + "/" + pair.collection_id + "_" + str(f'{pair.im2id0:04}') + "/" + \
-        pair.collection_id + "_" + str(f'{pair.im2id0:04}') + "_" + str(f'{pair.im2id1:04}') + ".jpg"
-    return [pair.id, im1_name, im2_name]
+    for i in range(unlinked_pairs.count()):
+        pair = unlinked_pairs[i]
+        im1_name = "NCAP/" + pair.island + "/" + pair.collection_id + "_" + str(f'{pair.im1id0:04}') + "/" + \
+            pair.collection_id + "_" + str(f'{pair.im1id0:04}') + "_" + str(f'{pair.im1id1:04}') + ".jpg"
+        im2_name = "NCAP/" + pair.island + "/" + pair.collection_id + "_" + str(f'{pair.im2id0:04}') + "/" + \
+            pair.collection_id + "_" + str(f'{pair.im2id0:04}') + "_" + str(f'{pair.im2id1:04}') + ".jpg"
+        if os.path.exists("edge/static/" + im1_name) and os.path.exists("edge/static/" + im2_name):
+            return [pair.id, im1_name, im2_name]
+    return [None, None, None]
+

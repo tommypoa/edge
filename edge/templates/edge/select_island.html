@@ -3,11 +3,11 @@
 
 <h2>Choose your collection from the following:</h2>
 
-{% for island in islands %}
-<a href="{% url 'edge:index' island %}">
+{% for island in island_counts %}
+<a href="{% url 'edge:index' island.0 %}">
   <h3>
     <li>
-      {{island}}
+      {{island.0}} ({{island.1}} out of {{island.2}} completed)
     </li>
   </h3>
 </a>
