@@ -9,9 +9,10 @@ import csv
 load_dotenv()
 storage_account = "ncapdata"
 access_key = os.getenv("ACCESS_KEY")
-containers = ["montserrat"]
+containers = ["virginislands", "stvincentgrenadines", "stlucia"]
 static_path = os.getcwd() + "/edge/static/"
 image_list = set()
+scale_factor = 10
 
 ### Helper functions
 def cd_to_container(container):
@@ -24,23 +25,23 @@ def cd_to_container(container):
 
 def resize(path):
     img = cv.imread(path)
-    scale_percent = 10
-    width = int(img.shape[1] * scale_percent / 100)
-    height = int(img.shape[0] * scale_percent / 100)
+    width = int(img.shape[1] * scale_factor / 100)
+    height = int(img.shape[0] * scale_factor / 100)
     dim = (width, height)
     resized = cv.resize(img, dim, interpolation = cv.INTER_AREA)
     cv.imwrite(path[:-3] + "jpg", resized)
-    os.remove(path)
+    if (path[-3:] == "tif"):
+        os.remove(path)
 
 def read_links():
     with open(static_path + "links.csv") as f:
         reader = csv.reader(f)
         next(reader, None) # Skip the headers
         for row in reader:
-            blob_name_1 = row[2] + "_" + row[3].zfill(4) + "/" + \
-                row[2] + "_" + row[3].zfill(4) + "_" + row[4].zfill(4)
-            blob_name_2 = row[2] + "_" + row[5].zfill(4) + "/" + \
-                row[2] + "_" + row[5].zfill(4) + "_" + row[6].zfill(4) 
+            blob_name_1 = row[1] + "_" + row[2].zfill(4) + "/" + \
+                row[1] + "_" + row[2].zfill(4) + "_" + row[3].zfill(4)
+            blob_name_2 = row[1] + "_" + row[4].zfill(4) + "/" + \
+                row[1] + "_" + row[4].zfill(4) + "_" + row[5].zfill(4) 
             image_list.add(blob_name_1)
             image_list.add(blob_name_2)
 

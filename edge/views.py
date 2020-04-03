@@ -16,13 +16,15 @@ import logging
 visualization_output_path = "edge/static/NCAP/"
 point_format_path = "edge/world/df_format.points"
 resizeFactor = 10
+islands = ["dominica", "montserrat", "caymanislands", "jamaica", "virginislands", "stvincentgrenadines", "stlucia"]
 
 def select_island(request):
-    return render(request, 'edge/select_island.html')
+    context = {'islands': islands}
+    return render(request, 'edge/select_island.html', context)
 
 def index(request, island):
     # image_url = <connection to server to get NCAP images>. Local for now.
-    island, pair_id, im1_path, im2_path = get_next_pair(island)
+    pair_id, im1_path, im2_path = get_next_pair(island)
     if pair_id == None:
         context = {'island': island}
         return render(request, 'edge/completed.html', context)
@@ -94,23 +96,28 @@ def create_links(request):
         for row in reader:
             _, created = ImPair.objects.get_or_create(
                 island=row[0],
-                collection_id=row[2],
-                im1id0 = row[3],
-                im1id1 = row[4],
-                im2id0 = row[5],
-                im2id1 = row[6]
+                collection_id=row[1],
+                im1id0 = row[2],
+                im1id1 = row[3],
+                im2id0 = row[4],
+                im2id1 = row[5]
                 )
-    return redirect('edge:index')
+    return redirect('edge:select_island')
+
+def change_island_name(request):
+    ImPair.objects.filter(island='Dominica').update(island="dominica")
+    ImPair.objects.filter(island='Montserrat').update(island="montserrat")
+    return redirect('edge:select_island')
 
 ### HELPER FUNCTIONS
 
 def get_next_pair(island):
     unlinked_pairs = ImPair.objects.filter(linked=False, island=island)
     if unlinked_pairs.count() == 0:
-        return [None, None, None, None]
+        return [None, None, None]
     pair = unlinked_pairs[0]
     im1_name = "NCAP/" + pair.island + "/" + pair.collection_id + "_" + str(f'{pair.im1id0:04}') + "/" + \
         pair.collection_id + "_" + str(f'{pair.im1id0:04}') + "_" + str(f'{pair.im1id1:04}') + ".jpg"
     im2_name = "NCAP/" + pair.island + "/" + pair.collection_id + "_" + str(f'{pair.im2id0:04}') + "/" + \
         pair.collection_id + "_" + str(f'{pair.im2id0:04}') + "_" + str(f'{pair.im2id1:04}') + ".jpg"
-    return [island, pair.id, im1_name, im2_name]
+    return [pair.id, im1_name, im2_name]

@@ -2,17 +2,13 @@
 <h1>Global Policy Lab | Aerial History Project | Stitching</h1>
 
 <h2>Choose your collection from the following:</h2>
-<a href="{% url 'edge:index' 'Dominica' %}">
+
+{% for island in islands %}
+<a href="{% url 'edge:index' island %}">
   <h3>
     <li>
-      Dominica
+      {{island}}
     </li>
   </h3>
 </a>
-<a href="{% url 'edge:index' 'Montserrat' %}">
-  <h3>
-    <li>
-      Montserrat
-    </li>
-  </h3>
-</a>
+{% endfor %}
