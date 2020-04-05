@@ -4,14 +4,18 @@ import os
 from dotenv import load_dotenv
 import cv2 as cv
 import csv
+import numpy as np
 
 ### Variables
 load_dotenv()
 storage_account = "ncapdata"
 access_key = os.getenv("ACCESS_KEY")
-containers = ["virginislands"] #, "stvincentgrenadines", "stlucia"]
+containers = ["virginislands"]#"jamaica", "stvincentgrenadines", "stlucia"]
 static_path = os.getcwd() + "/edge/static/"
+link_path = "links.csv"
+no_image_path = "no_image2.csv"
 image_list = set()
+no_image_list = []
 scale_factor = 10
 
 ### Helper functions
@@ -34,26 +38,30 @@ def resize(path):
         os.remove(path)
 
 def read_links():
-    with open(static_path + "links.csv") as f:
+    with open(static_path + link_path) as f:
         reader = csv.reader(f)
         next(reader, None) # Skip the headers
         for row in reader:
             blob_name_1 = row[1] + "_" + row[2].zfill(4) + "/" + \
                 row[1] + "_" + row[2].zfill(4) + "_" + row[3].zfill(4)
             blob_name_2 = row[1] + "_" + row[4].zfill(4) + "/" + \
-                row[1] + "_" + row[4].zfill(4) + "_" + row[5].zfill(4) 
+                row[1] + "_" + row[4].zfill(4) + "_" + row[5].zfill(4)
             image_list.add(blob_name_1)
             image_list.add(blob_name_2)
+            # image_list.add(row[0] + "/" + blob_name_1)
+            # image_list.add(row[0] + "/" + blob_name_2)
+            check_image(row[0] + "/" + blob_name_1, row)
+            check_image(row[0] + "/" + blob_name_2, row)
+    no_image_list_np = np.asarray(no_image_list)
+    np.savetxt(static_path + no_image_path, no_image_list_np, delimiter=",", fmt='%s')
 
 ### Downloader
 def download_images():
-    print(image_list)
     for container in containers:
         cd_to_container(container)
         block_blob_service = BlockBlobService(account_name=storage_account, account_key=access_key)
         generator = block_blob_service.list_blobs(container)
         for blob in generator:
-            print(blob.name, "\n")
             if blob.name[:-4] in image_list:
                 print("Downloading " + container + "/" + blob.name)
                 if os.path.exists(os.getcwd() + "/" + blob.name):
@@ -74,5 +82,30 @@ def download_images():
                     block_blob_service.get_blob_to_path(container,blob.name,blob.name)
                 resize(os.getcwd() + "/" + blob.name)
 
+def check_image(image, row):
+    os.chdir(static_path + "NCAP")
+    image_path = os.getcwd()
+    if not os.path.isfile(image_path + "/" + image + ".jpg") and not row in no_image_list:
+        no_image_list.append(row)
+
+
+def check_images_exist():
+    os.chdir(static_path + "NCAP")
+    image_path = os.getcwd()
+    test = ""
+    for image in image_list:
+        if not os.path.isfile(image_path + "/" + image + ".jpg"):
+            no_image_list.append(image)
+    no_image_list.sort()
+    combined_string = ""
+    for no_image in no_image_list:
+        combined_string += no_image + "\n"
+    print(combined_string)
+
+### Main
 read_links()
-download_images()
+# download_images()
+
+
+# if __name__ == "__main__":
+#     main()
