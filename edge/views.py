@@ -96,6 +96,7 @@ def visualize(request):
     return JsonResponse(response_data)
 
 def create_links(request):
+    duplicate_links = []
     with open("edge/static/human_links_apr16.csv") as f:
         reader = csv.reader(f)
         next(reader, None) # Skip the headers
@@ -106,8 +107,30 @@ def create_links(request):
                 im1id0 = row[2],
                 im1id1 = row[3],
                 im2id0 = row[4],
-                im2id1 = row[5]
+                im2id1 = row[5],
                 )
+            if not created:
+                duplicate_links.append(row)
+        duplicate_links_np = np.asarray(duplicate_links)
+        np.savetxt("edge/static/human_links_apr16_duplicate.csv", duplicate_links_np, delimiter=",", fmt='%s')
+
+    return redirect('edge:select_island')
+
+def create_duplicates(request):
+    with open("edge/static/human_links_apr16_duplicate.csv") as f:
+        reader = csv.reader(f)
+        next(reader, None) # Skip the headers
+        for row in reader:
+            _, created = ImPair.objects.get_or_create(
+                island=row[0],
+                collection_id=row[1],
+                im1id0 = row[2],
+                im1id1 = row[3],
+                im2id0 = row[4],
+                im2id1 = row[5],
+                linked = False
+                )
+
     return redirect('edge:select_island')
 
 def change_island_name(request):
