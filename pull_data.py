@@ -10,10 +10,10 @@ import numpy as np
 load_dotenv()
 storage_account = "ncapdata"
 access_key = os.getenv("ACCESS_KEY")
-containers = ["virginislands", "stlucia", "stvincentgrenadines"] #, "caymanislands"]
+containers = ["dominica", "montserrat","jamaica", "stlucia"]
 static_path = os.getcwd() + "/edge/static/"
-link_path = "human_links_apr13_manual.csv"
-no_image_path = "no_image_apr13.csv"
+link_path = "human_links_apr16.csv"
+no_image_path = "no_image_apr16.csv"
 image_list = set()
 no_image_list = []
 scale_factor = 10
@@ -107,7 +107,7 @@ def check():
 ### Main
 read_links()
 download_images()
-# check()
+check()
 
 ### KIV 
 # if __name__ == "__main__":
