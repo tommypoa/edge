@@ -97,7 +97,7 @@ def visualize(request):
 
 def create_links(request):
     duplicate_links = []
-    with open("edge/static/human_links_apr16.csv") as f:
+    with open("edge/static/human_links_01232021.csv") as f:
         reader = csv.reader(f)
         next(reader, None) # Skip the headers
         for row in reader:
@@ -112,12 +112,12 @@ def create_links(request):
             if not created:
                 duplicate_links.append(row)
         duplicate_links_np = np.asarray(duplicate_links)
-        np.savetxt("edge/static/human_links_apr16_duplicate.csv", duplicate_links_np, delimiter=",", fmt='%s')
+        np.savetxt("edge/static/human_links_01232021_duplicate.csv", duplicate_links_np, delimiter=",", fmt='%s')
 
     return redirect('edge:select_island')
 
 def create_duplicates(request):
-    with open("edge/static/human_links_apr16_duplicate.csv") as f:
+    with open("edge/static/human_links_01232021_duplicate.csv") as f:
         reader = csv.reader(f)
         next(reader, None) # Skip the headers
         for row in reader:
