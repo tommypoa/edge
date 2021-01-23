@@ -2,3 +2,4 @@ edge/static/NCAP/last_visualization.jpg
 .env
 .DS_Store
 .pyc
+edge/static/.DS_Store

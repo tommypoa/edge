@@ -1,4 +1,4 @@
-from azure.storage.blob import BlockBlobService
+from azure.storage.blob import BlobServiceClient
 from azure.storage.blob import PublicAccess
 import os
 from dotenv import load_dotenv
@@ -8,12 +8,13 @@ import numpy as np
 
 ### Variables
 load_dotenv()
-storage_account = "ncapdata"
+storage_account = "https://portal.azure.com/#@aerialhistoryprojectoutlook.onmicrosoft.com/resource/subscriptions/10bd7236-339f-4730-8042-e6200e7e76f4/resourceGroups/Historical_Remote_Sensing/providers/Microsoft.Storage/storageAccounts/ncapdata/overview" #"ncapdata"
 access_key = os.getenv("ACCESS_KEY")
-containers = ["dominica", "montserrat","jamaica", "stlucia"]
+connect_str = os.getenv("CONNECT_STR")
+containers = ["jamaica"] # "dominica", "montserrat","jamaica", "stlucia"
 static_path = os.getcwd() + "/edge/static/"
-link_path = "human_links_apr16.csv"
-no_image_path = "no_image_apr16.csv"
+link_path = "human_links_01232021.csv"
+no_image_path = "no_image_01232021.csv"
 image_list = set()
 no_image_list = []
 scale_factor = 10
@@ -51,14 +52,14 @@ def read_links():
     no_image_list_np = np.asarray(no_image_list)
     np.savetxt(static_path + no_image_path, no_image_list_np, delimiter=",", fmt='%s')
 
-
 ### Downloader
 def download_images():
     for container in containers:
         cd_to_container(container)
-        block_blob_service = BlockBlobService(account_name=storage_account, account_key=access_key)
-        generator = block_blob_service.list_blobs(container)
-        for blob in generator:
+        blob_service_client = BlobServiceClient.from_connection_string(connect_str)
+        container_client = blob_service_client.get_container_client(container)
+        blob_list = container_client.list_blobs()
+        for blob in blob_list:
             if blob.name[:-4] in image_list:
                 print("Downloading " + container + "/" + blob.name)
                 if os.path.exists(os.getcwd() + "/" + blob.name):
@@ -70,13 +71,23 @@ def download_images():
                     head, tail = os.path.split("{}".format(blob.name))
                     if (os.path.isdir(os.getcwd()+ "/" + head)):
                         #download the files to this directory
-                        block_blob_service.get_blob_to_path(container,blob.name,os.getcwd()+ "/" + head + "/" + tail)
+                        # blob_service_client.get_blob_to_path(container,blob.name,os.getcwd()+ "/" + head + "/" + tail)
+                        download_file_path = os.getcwd()+ "/" + head + "/" + tail
+                        with open(download_file_path, "wb") as download_file:
+                            download_file.write(container_client.download_blob(blob.name).readall())
                     else:
                         #create the diretcory and download the file to it
                         os.mkdir(os.getcwd()+ "/" + head)
-                        block_blob_service.get_blob_to_path(container,blob.name,os.getcwd()+ "/" + head + "/" + tail)
+                        # blob_service_client.get_blob_to_path(container,blob.name,os.getcwd()+ "/" + head + "/" + tail)
+                        download_file_path = os.getcwd()+ "/" + head + "/" + tail
+                        with open(download_file_path, "wb") as download_file:
+                            download_file.write(container_client.download_blob(blob.name).readall())
                 else:
-                    block_blob_service.get_blob_to_path(container,blob.name,blob.name)
+                    # blob_service_client.get_blob_to_path(container,blob.name,blob.name)
+                    download_file_path = blob.name
+                    with open(download_file_path, "wb") as download_file:
+                        download_file.write(container_client.download_blob(blob.name).readall())
+
                 resize(os.getcwd() + "/" + blob.name)
 
 def check():
@@ -105,10 +116,12 @@ def check():
     print(combined_string)
 
 ### Main
-read_links()
-download_images()
-check()
+# read_links()
+# download_images()
+# check()
+
 
 ### KIV 
 # if __name__ == "__main__":
 #     main()
+
