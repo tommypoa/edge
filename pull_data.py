@@ -62,7 +62,7 @@ def download_images():
         for blob in blob_list:
             if blob.name[:-4] in image_list:
                 print("Downloading " + container + "/" + blob.name)
-                if os.path.exists(os.getcwd() + "/" + blob.name):
+                if os.path.exists(os.getcwd() + "/" + blob.name[:-3] + "jpg"):
                     print("Already downloaded.")
                     continue
                 #check if the path contains a folder structure, create the folder structure
@@ -116,9 +116,9 @@ def check():
     print(combined_string)
 
 ### Main
-# read_links()
-# download_images()
-# check()
+read_links()
+download_images()
+check()
 
 
 ### KIV 
